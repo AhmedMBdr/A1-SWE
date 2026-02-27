@@ -2,4 +2,4 @@
 To run any app you need the JDK from oracle
 then run any terminal 
   go to the folder that contains the .java files
-    run type "javac *.java" -> "java Main"
+    then type "javac *.java" -> "java Main"
