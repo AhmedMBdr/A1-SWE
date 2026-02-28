@@ -1,26 +1,33 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-public class BankAccount {
+public class BankAccount implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
     private String accountNumber;
     private String customerName;
     private String pin;
     private double balance;
     private List<String> transactionHistory;
+
     public BankAccount(String accountNumber, String name, String pin) {
         this.accountNumber = accountNumber;
         this.customerName = name;
         this.pin = pin;
         this.balance = 0.0;
         this.transactionHistory = new ArrayList<>();
+        
         transactionHistory.add("Account created with balance: $0.0");
     }
+
     public String getAccountNumber() {
         return accountNumber;
     }
+
     public String getCustomerName() {
         return customerName;
     }
+
     public boolean verifyPin(String inputPin) {
         return this.pin.equals(inputPin);
     }
@@ -51,6 +58,7 @@ public class BankAccount {
     public void checkBalance() {
         System.out.println("Current Balance: $" + balance);
     }
+
     public void printStatement() {
         System.out.println("\n--- Transaction History for " + customerName + " ---");
         for (String transaction : transactionHistory) {
