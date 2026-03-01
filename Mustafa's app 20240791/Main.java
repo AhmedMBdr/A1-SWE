@@ -93,16 +93,20 @@ public class Main {
             System.out.println("\n=== ACCOUNT MENU ===");
             System.out.println("1. Deposit Money");
             System.out.println("2. Withdraw Money");
-            System.out.println("3. Check Balance");
-            System.out.println("4. View Transaction History");
-            System.out.println("5. Logout");
-            System.out.print("Enter your choice (1-5): ");
+            System.out.println("3. Transfer Money");
+            System.out.println("4. Check Balance");
+            System.out.println("5. View Transaction History");
+            System.out.println("6. Change PIN");
+            System.out.println("7. Logout");
+            System.out.print("Enter your choice (1-7): ");
             choice = scanner.nextInt();
+            scanner.nextLine();
             
             switch(choice) {
                 case 1:
                     System.out.print("Enter amount to deposit: $");
                     amount = scanner.nextDouble();
+                    scanner.nextLine();
                     account.deposit(amount);
                     saveData();
                     break;
@@ -110,28 +114,62 @@ public class Main {
                 case 2:
                     System.out.print("Enter amount to withdraw: $");
                     amount = scanner.nextDouble();
+                    scanner.nextLine();
                     account.withdraw(amount);
                     saveData();
                     break;
                     
                 case 3:
+                    System.out.print("Enter destination Account Number: ");
+                    String targetAccNum = scanner.nextLine();
+                    
+                    if (targetAccNum.equals(account.getAccountNumber())) {
+                        System.out.println("Error: Cannot transfer to your own account.");
+                    } else if (bankDatabase.containsKey(targetAccNum)) {
+                        BankAccount targetAccount = bankDatabase.get(targetAccNum);
+                        System.out.print("Enter amount to transfer: $");
+                        amount = scanner.nextDouble();
+                        scanner.nextLine();
+                        account.transferTo(targetAccount, amount);
+                        saveData();
+                    } else {
+                        System.out.println("Error: Destination account not found.");
+                    }
+                    break;
+                    
+                case 4:
                     System.out.print("Account holder: " + account.getCustomerName() + " | ");
                     account.checkBalance();
                     break;
                 
-                case 4:
+                case 5:
                     account.printStatement();
                     break;
                     
-                case 5:
+                case 6:
+                    System.out.print("Enter current PIN: ");
+                    String currentPin = scanner.nextLine();
+                    System.out.print("Enter new PIN: ");
+                    String newPin = scanner.nextLine();
+                    
+                    if (account.changePin(currentPin, newPin)) {
+                        System.out.println("PIN successfully updated.");
+                        saveData();
+                    } else {
+                        System.out.println("Error: Incorrect current PIN.");
+                    }
+                    break;
+                    
+                case 7:
                     System.out.println("Logging out...");
                     break;
                     
                 default:
-                    System.out.println("Invalid choice. Please enter 1-5.");
+                    System.out.println("Invalid choice. Please enter 1-7.");
             }
-        } while (choice != 5);
+        } while (choice != 7);
     }
+
     private static void saveData() {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
             oos.writeObject(bankDatabase);
@@ -139,6 +177,7 @@ public class Main {
             System.out.println("Error saving bank data: " + e.getMessage());
         }
     }
+
     @SuppressWarnings("unchecked")
     private static void loadData() {
         File file = new File(DATA_FILE);

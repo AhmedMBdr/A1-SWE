@@ -1,6 +1,7 @@
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
 public class BankAccount implements Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -31,6 +32,15 @@ public class BankAccount implements Serializable {
     public boolean verifyPin(String inputPin) {
         return this.pin.equals(inputPin);
     }
+    
+    public boolean changePin(String oldPin, String newPin) {
+        if (verifyPin(oldPin)) {
+            this.pin = newPin;
+            transactionHistory.add("PIN successfully changed.");
+            return true;
+        }
+        return false;
+    }
 
     public void deposit(double amount) {
         if (amount > 0) {
@@ -52,6 +62,22 @@ public class BankAccount implements Serializable {
         } else {
             System.out.println("Invalid amount. Insufficient funds.");
             System.out.println("The maximum amount you can withdraw is: $" + balance); 
+        }
+    }
+    
+    public void transferTo(BankAccount targetAccount, double amount) {
+        if (amount > 0 && amount <= balance) {
+            this.balance -= amount;
+            targetAccount.balance += amount;
+            
+            System.out.println("Successfully transferred $" + amount + " to " + targetAccount.getCustomerName());
+            
+            this.transactionHistory.add("Transferred: -$" + amount + " to Account: " + targetAccount.getAccountNumber() + " | New Balance: $" + balance);
+            targetAccount.transactionHistory.add("Received: +$" + amount + " from Account: " + this.accountNumber + " | New Balance: $" + targetAccount.balance);
+        } else if (amount <= 0) {
+            System.out.println("Error: Transfer amount must be positive.");
+        } else {
+            System.out.println("Invalid amount. Insufficient funds.");
         }
     }
     
